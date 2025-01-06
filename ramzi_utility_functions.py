@@ -5,7 +5,7 @@ Designed, Written, and Tested By Ramzi Reilly Adil.
 """
 
 from os import listdir, path
-from time import time
+from time import time,ctime
 from datetime import datetime
 from tkinter import filedialog
 
@@ -22,7 +22,7 @@ class ramzi_timer():
         function_to_test #replace this function with function you want to test
 
         r_timer.timer_end()
-        print(get_time_elapsed_string()) #this will print lenght of time it took to run a function
+        print(get_time_elapsed_string()) #this will print length of time it took to run a function
 
         r_timer.reset_timer() #OPTIONAL, resets the timer if you want to use it again for a diff function
     """
@@ -133,7 +133,7 @@ class ramzi_timer():
                         elapsed_minutes_lst[0] * self.seconds_in_a_minute)
 
         print_out_dict["Seconds"] = time_left_to_calculate_in_sec
-        ############################### Calculate Seconds elapsed ##################################
+        ############################### Get string representing time elapsed ##################################
 
         time_elapsed_lst = []
 
@@ -145,50 +145,92 @@ class ramzi_timer():
 
         return ','.join(time_elapsed_lst)
 
-def get_all_filenames_from_directory(directory_path: str) -> list:
-    """
-    This function will return a list containing the filenames in a directory
-        excluding other folders/directories
-    :param directory_path: @str string representation of directory path where \\ should be
-                                ussed to separated inner folders
-    :return: @list list of filenames
-    """
 
-    all_items = listdir(directory_path)
-    all_files = [x for x in all_items if path.isfile(path.join(directory_path, x))]
-    return all_files
-
-
-def fix_dir_strings(filepath_in: str) -> str:
+class ramzi_file_handler():
     """
-        Helper function to make the path correct by replace '/' with '\'
-            idea is to use this to make filepaths taken from filedialog  easily useable
-            for with open fxn.
-        :param filepath_in: @str filepath to a directory
-        :return: @str filepath where '/' is replaced by '\'
+    This class will contain shortcut functions relevant to obtaining file paths and other
+        file "handling" related functions.
     """
-    filepath = filepath_in
-    return filepath.replace('/', '\\')
+    def get_all_filenames_from_directory(self,directory_path: str) -> list:
+        """
+        This function will return a list containing the filenames in a directory
+            excluding other folders/directories
+        :param directory_path: @str string representation of directory path where \\ should be
+                                    ussed to separated inner folders
+        :return: @list list of filenames
+        """
+
+        all_items = listdir(directory_path)
+        all_files = [x for x in all_items if path.isfile(path.join(directory_path, x))]
+        return all_files
 
 
-def user_select_directory() -> str:
-    """
-     Opens a window for user to select directory.
-        Idea is to use this in conjuntion with get_all_filenames_from_directory fxn
-        and fix_dir_strings fxn to have full filepaths to files from a user
-        selected directory ready to go for use with the "with open" command
-     :return: @str the full path to the directory with '/' replaced with '\\'
-    """
+    def fix_dir_strings(self,filepath_in: str) -> str:
+        """
+            Helper function to make the path correct by replace '/' with '\'
+                idea is to use this to make filepaths taken from filedialog  easily useable
+                for with open fxn.
+            :param filepath_in: @str filepath to a directory
+            :return: @str filepath where '/' is replaced by '\'
+        """
+        filepath = filepath_in
+        return filepath.replace('/', '\\')
 
-    directory_path = filedialog.askdirectory()
-    directory_path_edited = fix_dir_strings(directory_path)
-    return directory_path_edited
+
+    def user_select_directory(self) -> str:
+        """
+         Opens a window for user to select directory.
+            Idea is to use this in conjunction with get_all_filenames_from_directory fxn
+            and fix_dir_strings fxn to have full filepaths to files from a user
+            selected directory ready to go for use with the "with open" command
+         :return: @str the full path to the directory with '/' replaced with '\\'
+        """
+
+        directory_path = filedialog.askdirectory()
+        directory_path_edited = self.fix_dir_strings(directory_path)
+        return directory_path_edited
+
+    def user_select_files(self) -> list:
+        """
+            Opens a window for a user to select file(s). File(s) must all exist in the same directory.
+                The "/" will be replaced with "\\" for easier use in conjunction with the
+                with open command
+            :return: @list the file paths of the files the user has selected
+        """
+        file_paths = filedialog.askopenfilenames()
+        output_lst = []
+        for each in file_paths:
+            edited_path = self.fix_dir_strings(each)
+            output_lst.append(edited_path)
+        return output_lst
+
+    def get_file_creation_timestamp(self,filepath: str) -> str:
+        """
+            Returns a string representing the date and time that a file was created
+            :param filepath: @str the filepath to a file
+            :return @str a timestamp with info regarding the creation date of a file
+        """
+        creation_time_epoch = path.getctime(filepath)
+        creation_time_timestamp = ctime(creation_time_epoch)
+        return creation_time_timestamp
+
+    def get_file_creation_datetime(self,filepath: str) -> datetime:
+        """
+            Returns a datetime object representing the date and time that a file was created.
+                This is useful for comparing file creation datetimes
+            :param filepath: @str the filepath to a file
+            :return @datetime a datetime with info regarding the creation date of a file
+        """
+        timestamp_str = self.get_file_creation_timestamp(filepath)
+        creation_date_dt = datetime.strptime(timestamp_str, "%a %b %d %H:%M:%S %Y")
+        return creation_date_dt
+
 
 
 def clear_line_new_print(print_string) -> None:
     """
     This function will clear the current line printed and then print a new line.
-        Used to help make loading prints.
+        Used to help make loading prints to terminal.
     :param print_string: @str string to print, generally will be in format of "X of N"
     :return: @None this prints to the terminal, it does not return a string
     """
