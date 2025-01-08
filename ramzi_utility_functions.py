@@ -177,27 +177,31 @@ class ramzi_file_handler():
         return filepath.replace('/', '\\')
 
 
-    def user_select_directory(self) -> str:
+    def user_select_directory(self,window_title:str = 'Select A Directory') -> str:
         """
          Opens a window for user to select directory.
             Idea is to use this in conjunction with get_all_filenames_from_directory fxn
             and fix_dir_strings fxn to have full filepaths to files from a user
             selected directory ready to go for use with the "with open" command
+         :param: @str the title that appears on the top bar of the window
+                        - Default value is: 'Select A Directory'
          :return: @str the full path to the directory with '/' replaced with '\\'
         """
 
-        directory_path = filedialog.askdirectory()
+        directory_path = filedialog.askdirectory(title=window_title)
         directory_path_edited = self.fix_dir_strings(directory_path)
         return directory_path_edited
 
-    def user_select_files(self) -> list:
+    def user_select_files(self, window_title: str = 'Select One Or More Files') -> list:
         """
             Opens a window for a user to select file(s). File(s) must all exist in the same directory.
                 The "/" will be replaced with "\\" for easier use in conjunction with the
                 with open command
+            :param: @str the title that appears on the top bar of the window
+                        - Default value is: 'Select One Or More Files'
             :return: @list the file paths of the files the user has selected
         """
-        file_paths = filedialog.askopenfilenames()
+        file_paths = filedialog.askopenfilenames(title=window_title)
         output_lst = []
         for each in file_paths:
             edited_path = self.fix_dir_strings(each)
