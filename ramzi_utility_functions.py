@@ -24,7 +24,7 @@ class ramzi_timer():
         r_timer.timer_end()
         print(get_time_elapsed_string()) #this will print length of time it took to run a function
 
-        r_timer.reset_timer() #OPTIONAL, resets the timer if you want to use it again for a diff function
+        r_timer.reset_timer() #OPTIONAL, resets the timer if you want to use it again for a different function
     """
     def __init__(self):
         self.start_time_epoch_sec = None
@@ -34,12 +34,18 @@ class ramzi_timer():
         self.seconds_in_a_day = 86400
         self.seconds_in_an_hour = 3600
         self.seconds_in_a_minute = 60
+        self.print_out_dict = {
+            "Days": None,
+            "Hours": None,
+            "Minutes": None,
+            "Seconds": None
+        }
 
     def timer_start(self):
         """
         This function should be run right before running the function you want to time.
-            Sets the start_time attribute to current time in value which is
-            the number of seconds passed since epoch. May differ between os.
+            Sets the start_time attribute to the current time; the value of which is
+            the number of seconds passed since epoch. Epoch start time may differ between os.
             For example, for Unix OS the epoch is January 1, 1970, 00:00:00 at UTC is epoch
         :return: @None
         """
@@ -49,7 +55,7 @@ class ramzi_timer():
     def timer_end(self):
         """
         This function should be run right after running the function you want to time.
-            Sets the end_time attribute to current time in value which is
+            Sets the end_time attribute to current time;  the value of which is
             the number of seconds passed since epoch. May differ between os.
             For example, for Unix OS the epoch is January 1, 1970, 00:00:00 at UTC is epoch
         :return: @None
@@ -59,13 +65,20 @@ class ramzi_timer():
 
     def reset_timer(self):
         """
-        Resets the attributes of this class. Optionally can be run.
+        Resets the attributes of this class. Must be run before running the
+            ramzi_object a second time to time the subsequent function.
         :return: @None
         """
         self.start_time_epoch_sec = None
         self.end_time_epoch_sec = None
         self.start_datetime = None
         self.end_datetime = None
+        self.print_out_dict = {
+            "Days": None,
+            "Hours": None,
+            "Minutes": None,
+            "Seconds": None
+        }
 
     def check_attributes(self) -> None:
         """
@@ -94,17 +107,11 @@ class ramzi_timer():
         """
         self.check_attributes()
 
-        print_out_dict = {
-            "Days": None,
-            "Hours": None,
-            "Minutes": None,
-            "Seconds": None}
-
         time_left_to_calculate_in_sec = self.get_time_diff_epoch()
 
         ############################### Calculate Days elapsed ##################################
         elapsed_days_lst = divmod(time_left_to_calculate_in_sec, self.seconds_in_a_day)
-        print_out_dict["Days"] = elapsed_days_lst[0]
+        self.print_out_dict["Days"] = elapsed_days_lst[0]
 
         if elapsed_days_lst[0] == 0:
             time_left_to_calculate_in_sec = elapsed_days_lst[1]
@@ -114,7 +121,7 @@ class ramzi_timer():
 
         ############################### Calculate Hours elapsed ##################################
         elapsed_hours_lst = divmod(time_left_to_calculate_in_sec, self.seconds_in_an_hour)
-        print_out_dict["Hours"] = elapsed_hours_lst[0]
+        self.print_out_dict["Hours"] = elapsed_hours_lst[0]
 
         if elapsed_hours_lst[0] == 0:
             time_left_to_calculate_in_sec = elapsed_hours_lst[1]
@@ -124,7 +131,7 @@ class ramzi_timer():
 
         ############################### Calculate Minutes & Seconds elapsed ##################################
         elapsed_minutes_lst = divmod(time_left_to_calculate_in_sec, self.seconds_in_a_minute)
-        print_out_dict["Minutes"] = elapsed_minutes_lst[0]
+        self.print_out_dict["Minutes"] = elapsed_minutes_lst[0]
 
         if elapsed_minutes_lst == 0:
             time_left_to_calculate_in_sec = elapsed_minutes_lst[1]
@@ -132,12 +139,12 @@ class ramzi_timer():
             time_left_to_calculate_in_sec = time_left_to_calculate_in_sec - (
                         elapsed_minutes_lst[0] * self.seconds_in_a_minute)
 
-        print_out_dict["Seconds"] = time_left_to_calculate_in_sec
+        self.print_out_dict["Seconds"] = time_left_to_calculate_in_sec
         ############################### Get string representing time elapsed ##################################
 
         time_elapsed_lst = []
 
-        for key, value in print_out_dict.items():
+        for key, value in self.print_out_dict.items():
             if value != 0:
                 time_elapsed_lst.append(f"{value} {key}")
             elif key == "Seconds" and value == 0:
