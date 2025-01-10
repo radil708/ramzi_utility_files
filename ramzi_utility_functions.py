@@ -308,8 +308,6 @@ class ramzi_file_handler():
 
         rename(file_to_rename_filepath,new_file_path)
 
-
-
 def clear_line_new_print(print_string) -> None:
     """
     This function will clear the current line printed and then print a new line.
@@ -318,5 +316,41 @@ def clear_line_new_print(print_string) -> None:
     :return: @None this prints to the terminal, it does not return a string
     """
     print('\r' + f"{print_string}", end='')
+
+def print_list(list_in: list, print_with_numbers: bool = False) -> None:
+    """
+    Prints each element in a list on a new line on the terminal.
+        Optionally will add numbering sequence.
+    :param list_in @list the list containing elements you want to print to the terminal
+    :param print_with_numbers @bool If True, will print with a number sequence prior to printing the element
+                                    Optional parameter, set to False by default
+    :return: @None
+    """
+    for i in range(len(list_in)):
+        print_statement = list_in[i]
+
+        if print_with_numbers is True:
+            print_statement = f"{i+1}.) {print_statement}"
+
+        print(print_statement)
+
+def print_dict(dict_in: dict,print_with_numbers: bool = False) -> None:
+    """
+    Prints out each key, value pair in a new line on the terminal.
+        Optionally will add numbering sequence.
+    :param dict_in @dict the dictionary containing key value pairs you want to print to the terminal
+    :param print_with_numbers @bool If True, will print with a number sequence prior to printing the element
+                                    Optional parameter, set to False by default
+    :return: @None
+    """
+    counter = 1
+
+    for k,v in dict_in.items():
+        print_statement = f"KEY:{k}\tVALUE:{v}"
+
+        if print_with_numbers is True:
+            print_statement = f"{counter}.) " + print_statement
+
+        counter += 1
 
 # Designed, Written, and Tested By Ramzi Reilly Adil.
