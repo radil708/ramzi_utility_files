@@ -4,10 +4,20 @@ or testing small programs.
 Designed, Written, and Tested By Ramzi Reilly Adil.
 """
 
-from os import listdir, path
+from os import listdir, path, rename
 from time import time,ctime
 from datetime import datetime
 from tkinter import filedialog
+from shutil import copy,move
+
+class custom_exception(Exception):
+    """
+    Class used to make custom exceptions/errors. Place your custom error message in the parameter for
+        constructor when instantiating a new custom_exception instance.
+    """
+    def __init__(self, message):
+        self.message = message
+        super().__init__(self.message)
 
 class ramzi_timer():
     """
@@ -152,7 +162,6 @@ class ramzi_timer():
 
         return ','.join(time_elapsed_lst)
 
-
 class ramzi_file_handler():
     """
     This class will contain shortcut functions relevant to obtaining file paths and other
@@ -236,6 +245,69 @@ class ramzi_file_handler():
         creation_date_dt = datetime.strptime(timestamp_str, "%a %b %d %H:%M:%S %Y")
         return creation_date_dt
 
+    def copy_file_to_new_destination(self,file_to_copy_filepath: str, new_destination_directory: str) -> None:
+        """
+            Makes a copy of a file. The file will be stored at a different destination.
+                Will throw an error if the new destination is the same as the file to copy's
+                current destination.
+                Idea is to be able to use this in conjunction with user_select fxn's
+            :param file_to_copy_filepath: @str the filepath to the file you want to copy
+            :param new_destination_directory: @str the path to the directory where you want to copy the file
+            :return @None
+        """
+        if not path.isfile(file_to_copy_filepath):
+            not_a_file_exception = custom_exception(f"Error: {file_to_copy_filepath} does NOT represent a file, please check that file_to_copy_filepath is not a directory")
+            raise not_a_file_exception
+        elif not path.isdir(new_destination_directory):
+            not_a_directory_exception = custom_exception(f"Error: {new_destination_directory} does NOT represent a directory, please check that new_destination_directory is NOT a file. ")
+            raise not_a_directory_exception
+
+        filename = file_to_copy_filepath.split("\\")[-1]
+        filepath_of_copy = new_destination_directory + '\\' + filename
+
+        copy(file_to_copy_filepath, filepath_of_copy) #already has built in sameFileError so no need to make that
+
+    def move_file_to_new_destination(self,file_to_move_filepath: str, new_destination_directory: str) -> None:
+        """
+            Moves a file from one directory to another. Pretty much the same as move from shutil library, but
+                I personally think the name of this fxn is more clear.
+            :param file_to_move_filepath: @str the filepath to the file you want to move
+            :param new_destination_directory: @str the path to the directory where you want to move the file to
+            :return @None
+        """
+        if not path.isfile(file_to_move_filepath):
+            not_a_file_exception = custom_exception(f"Error: {file_to_move_filepath} does NOT represent a file, please check that file_to_move_filepath is not a directory")
+            raise not_a_file_exception
+        elif not path.isdir(new_destination_directory):
+            not_a_directory_exception = custom_exception(f"Error: {new_destination_directory} does NOT represent a directory, please check that new_destination_directory is NOT a file. ")
+            raise not_a_directory_exception
+
+        move(file_to_move_filepath,new_destination_directory)
+
+    def rename_file(self,file_to_rename_filepath: str,new_file_name: str) -> None:
+        """
+            Renames a file. More helpful than rename from os because it will maintain the extension
+                of a file during the rename process.
+            :param file_to_rename_filepath: @str the filepath to the file you want to rename
+            :param new_file_name: @str the new name of the file
+            :return @None
+        """
+        if not path.isfile(file_to_rename_filepath):
+            not_a_file_exception = custom_exception(f"Error: {file_to_rename_filepath} does NOT represent a file, please check that file_to_rename_filepath is not a directory")
+            raise not_a_file_exception
+
+        current_directory_list = file_to_rename_filepath.split("\\")
+        filename = current_directory_list.pop() #remove old filename retain elements pointing to directory
+
+        filename_extensions_list = filename.split('.') #some extensions consist of multiple dots tike .tar.gz
+        filename_extensions_list.pop(0) #remove old name, keep extensions
+        file_extension = '.'.join(filename_extensions_list)
+
+        current_directory_filepath = '\\'.join(current_directory_list)
+        new_file_path = current_directory_filepath + '\\' + new_file_name + '.' + file_extension #need this to keep file extension in name
+
+        rename(file_to_rename_filepath,new_file_path)
+
 
 
 def clear_line_new_print(print_string) -> None:
@@ -246,7 +318,5 @@ def clear_line_new_print(print_string) -> None:
     :return: @None this prints to the terminal, it does not return a string
     """
     print('\r' + f"{print_string}", end='')
-
-
 
 # Designed, Written, and Tested By Ramzi Reilly Adil.
