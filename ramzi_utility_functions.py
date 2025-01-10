@@ -350,7 +350,10 @@ def print_dict(dict_in: dict,print_with_numbers: bool = False) -> None:
 
         if print_with_numbers is True:
             print_statement = f"{counter}.) " + print_statement
+            counter += 1
 
-        counter += 1
+        print(print_statement)
+
+
 
 # Designed, Written, and Tested By Ramzi Reilly Adil.
